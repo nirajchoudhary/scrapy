@@ -9,9 +9,7 @@ import scrapy
 
 
 class Item(scrapy.Item):
-    # define the fields for item here like:
-    # name = scrapy.Field()
-    identifier = scrapy.Field()
     page_url = scrapy.Field()
-    url_text = scrapy.Field()
-    url_link = scrapy.Field()
+    relative_link = scrapy.Field()
+    absolute_link = scrapy.Field()
+    external_link = scrapy.Field()

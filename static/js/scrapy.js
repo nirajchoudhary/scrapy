@@ -24,9 +24,12 @@ $(document).ready(function() {
                                     + result.res_data[i].page_url + "</a></td>";
                         page_url = result.res_data[i].page_url;
                     }
-                    tbody_html += "<td>" + result.res_data[i].url_text + "</td>"
-                                + "<td><a href=\"" + result.res_data[i].url_link +"\" target=\"_blank\">"
-                                +   result.res_data[i].url_link + "</a></td>"
+                    tbody_html += "<td><a href=\"" + result.res_data[i].relative_link +"\" target=\"_blank\">"
+                                +   result.res_data[i].relative_link + "</a></td>"
+                                + "<td><a href=\"" + result.res_data[i].absolute_link +"\" target=\"_blank\">"
+                                +   result.res_data[i].absolute_link + "</a></td>"
+                                + "<td><a href=\"" + result.res_data[i].external_link +"\" target=\"_blank\">"
+                                +   result.res_data[i].external_link + "</a></td>"
                                 + "</tr>";
                 }
                 $("#url_tbody").html(tbody_html);

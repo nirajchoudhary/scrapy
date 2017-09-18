@@ -26,7 +26,7 @@ class ScrapyViews(View):
     def post(self, request):
         try:
             start_url = request.POST.get('start_url')
-            file_obj = open('scrapy_project/url.txt','w')
+            file_obj = open('scrapy_project/url.txt', 'w')
             file_obj.write(start_url)
             file_obj.close()
             try:
@@ -41,7 +41,7 @@ class ScrapyViews(View):
             while 1:
                 spider_status = scrapyd.job_status('default', job_id)
                 if spider_status == '':
-                    scrapyJson = json.dumps({"msg": "Issuae in Crawling."})
+                    scrapyJson = json.dumps({"msg": "Issue in Crawling."})
                     statusCode = 500
                     break
                 if spider_status == 'running':
@@ -52,15 +52,16 @@ class ScrapyViews(View):
                     print "Finished"
                     is_finished = True
                     break
-                time.sleep(1)
+                time.sleep(2)
             if is_finished:
                 url_List = Url_List.objects.filter(pk_id__gt=last_pk_id)
                 item_list = []
                 for url in url_List:
                     item = {}
                     item["page_url"] = url.page_url
-                    item["url_text"] = url.url_text
-                    item["url_link"] = url.url_link
+                    item["relative_link"] = url.relative_link
+                    item["absolute_link"] = url.absolute_link
+                    item["external_link"] = url.external_link
                     item_list.append(item)
                 scrapyJson = json.dumps({"msg": "Successfull",
                                          "res_data": item_list})

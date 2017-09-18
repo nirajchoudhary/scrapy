@@ -27,35 +27,33 @@ class CarrypandaSpider(CrawlSpider):
 
     def parse_obj(self, response):
         itemQ = Item()
-        # itemQ["title"] = response.xpath('//title/text()').extract_first()
-        itemQ["identifier"] = response.url.split("/")[3]
         itemQ["page_url"] = response.url
-
-        itemQ["url_text"] = []
-        itemQ["url_link"] = []
-        for href_item in response.xpath('//*[@href]').extract():
-            css_link = Selector(text=href_item).xpath(
-                '//link/@href').extract_first()
-            a_link = Selector(text=href_item).xpath(
-                '//a/@href').extract_first()
-            if css_link:
-                itemQ["url_text"].append("CSS/Link")
-                itemQ['url_link'].append(css_link)
-            if a_link:
-                itemQ["url_text"].append("Anchor Link")
-                itemQ['url_link'].append(a_link)
-            css_link = ''
-            a_link = ''
-        for src_item in response.xpath('//*[@src]').extract():
-            script = Selector(text=src_item).xpath(
-                '//script/@src').extract_first()
-            image = Selector(text=src_item).xpath(
-                '//img/@src').extract_first()
-            if script:
-                itemQ["url_text"].append("Script")
-                itemQ['url_link'].append(script)
-            if image:
-                itemQ["url_text"].append("Image")
-                itemQ['url_link'].append(image)
+        itemQ["relative_link"] = []
+        itemQ["absolute_link"] = []
+        itemQ["external_link"] = []
+        for href_item in response.xpath('//@href').extract():
+            link_arr = href_item.split('/')
+            if link_arr[0] == 'http:' or link_arr[0] == 'https:':
+                try:
+                    if link_arr[2] == self.allowed_domains:
+                        itemQ["absolute_link"].append(href_item)
+                    else:
+                        itemQ["external_link"].append(href_item)
+                except:
+                        itemQ["external_link"].append("Incorrect url")
+            else:
+                itemQ["relative_link"].append(href_item)
+        for src_item in response.xpath('//@src').extract():
+            link_arr = src_item.split('/')
+            if link_arr[0] == 'http:' or link_arr[0] == 'https:':
+                try:
+                    if link_arr[2] == self.allowed_domains:
+                        itemQ["absolute_link"].append(src_item)
+                    else:
+                        itemQ["external_link"].append(src_item)
+                except:
+                        itemQ["external_link"].append("Incorrect url")
+            else:
+                itemQ["relative_link"].append(src_item)
         LxmlLinkExtractor(allow=()).extract_links(response)
         return itemQ

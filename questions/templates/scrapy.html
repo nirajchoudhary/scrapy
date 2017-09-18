@@ -20,7 +20,7 @@
         </nav>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-10 offset-sm-1" id="scrapyDiv">
+                <div class="col-sm-12" id="scrapyDiv">
                     <div class="card card-outline-info mt-2">
                         <div class="card-header card-inverse card-info">
                             <h6 class="card-title mb-0"><b>Scrapy</b></h6>
@@ -29,13 +29,13 @@
                             <form id="scrapyForm">{% csrf_token %}
                                 <fieldset>
                                     <div class="row form-group">
-                                        <label for="start_url" class="col-sm-2 col-form-label text-sm-right ">URL</label>
-                                        <div class="col-sm-10">
+                                        <label for="start_url" class="col-sm-1 col-form-label text-sm-right ">URL</label>
+                                        <div class="col-sm-11">
                                             <input type="text" name="start_url" class="form-control" placeholder="Enter Page URL" maxlength="256" required id="start_url" />
                                         </div>
                                     </div>
                                     <div class="row form-group">
-                                        <div class="col-sm-10 offset-sm-2">
+                                        <div class="col-sm-11 offset-sm-1">
                                             <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                                             <img src="{% static '/image/loading.gif' %}" alt="Loading..." id="scrapyGif" height="30" width="30">
                                             <p class="text-danger" id="scrapyError"></p>
@@ -47,8 +47,9 @@
                                                 <thead>
                                                     <tr>
                                                         <th>Page URL</th>
-                                                        <th>Type</th>
-                                                        <th>URL Link</th>
+                                                        <th>Relative link</th>
+                                                        <th>Absolute link</th>
+                                                        <th>External link</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody id="url_tbody">
@@ -63,6 +64,7 @@
                 </div>
             </div>
         </div>
+        <br>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" type="text/javascript"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
