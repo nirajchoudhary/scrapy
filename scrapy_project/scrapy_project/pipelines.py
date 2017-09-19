@@ -17,26 +17,12 @@ class ScrapyProjectPipeline(object):
         #     pass
         with transaction.atomic():
             objList = []
-            relative_link_count = len(item["relative_link"])
-            absolute_link_count = len(item["absolute_link"])
-            external_link_count = len(item["external_link"])
-            max_count = max(relative_link_count, absolute_link_count,
-                external_link_count)
-            for i in range(max_count):
+            link_count = len(item["link"])
+            for i in range(link_count):
                 url_List = Url_List()
                 url_List.page_url = item["page_url"]
-                try:
-                    url_List.relative_link = item["relative_link"][i]
-                except:
-                    url_List.relative_link = ""
-                try:
-                    url_List.absolute_link = item["absolute_link"][i]
-                except:
-                    url_List.absolute_link = ""
-                try:
-                    url_List.external_link = item["external_link"][i]
-                except:
-                    url_List.external_link = ""
+                url_List.link = item["link"][i]
+                url_List.link_type = item["link_type"][i]
                 objList.append(url_List)
             Url_List.objects.bulk_create(objList)
         return item

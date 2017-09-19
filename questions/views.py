@@ -59,9 +59,8 @@ class ScrapyViews(View):
                 for url in url_List:
                     item = {}
                     item["page_url"] = url.page_url
-                    item["relative_link"] = url.relative_link
-                    item["absolute_link"] = url.absolute_link
-                    item["external_link"] = url.external_link
+                    item["link"] = url.link
+                    item["link_type"] = url.link_type
                     item_list.append(item)
                 scrapyJson = json.dumps({"msg": "Successfull",
                                          "res_data": item_list})

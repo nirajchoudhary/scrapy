@@ -10,6 +10,5 @@ import scrapy
 
 class Item(scrapy.Item):
     page_url = scrapy.Field()
-    relative_link = scrapy.Field()
-    absolute_link = scrapy.Field()
-    external_link = scrapy.Field()
+    link = scrapy.Field()
+    link_type = scrapy.Field()

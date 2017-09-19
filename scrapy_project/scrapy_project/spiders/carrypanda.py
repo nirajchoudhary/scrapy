@@ -28,23 +28,23 @@ class CarrypandaSpider(CrawlSpider):
     def parse_obj(self, response):
         itemQ = Item()
         itemQ["page_url"] = response.url
-        itemQ["relative_link"] = []
-        itemQ["absolute_link"] = []
-        itemQ["external_link"] = []
+        itemQ["link"] = []
+        itemQ["link_type"] = []
         href_links = response.xpath('//@href').extract()
         src_links = response.xpath('//@src').extract()
         all_link = href_links + src_links
         for href_item in all_link:
             link_arr = href_item.split('/')
+            itemQ["link"].append(href_item)
             if link_arr[0] == 'http:' or link_arr[0] == 'https:':
                 try:
                     if link_arr[2] == self.allowed_domains:
-                        itemQ["absolute_link"].append(href_item)
+                        itemQ["link_type"].append("Absolute")
                     else:
-                        itemQ["external_link"].append(href_item)
+                        itemQ["link_type"].append("External")
                 except:
-                        itemQ["external_link"].append("Incorrect url")
+                        itemQ["link_type"].append("Incorrect")
             else:
-                itemQ["relative_link"].append(href_item)
+                itemQ["link_type"].append("Relative")
         LxmlLinkExtractor(allow=()).extract_links(response)
         return itemQ
