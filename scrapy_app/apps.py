@@ -3,5 +3,5 @@ from __future__ import unicode_literals
 from django.apps import AppConfig
 
 
-class QuestionsConfig(AppConfig):
-    name = 'questions'
+class Scrapy_appConfig(AppConfig):
+    name = 'scrapy_app'

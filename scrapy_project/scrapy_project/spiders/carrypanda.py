@@ -27,6 +27,7 @@ class CarrypandaSpider(CrawlSpider):
 
     def parse_obj(self, response):
         itemQ = Item()
+        itemQ["start_url"] = self.url
         itemQ["page_url"] = response.url
         itemQ["link"] = []
         itemQ["link_type"] = []
@@ -36,15 +37,23 @@ class CarrypandaSpider(CrawlSpider):
         for href_item in all_link:
             link_arr = href_item.split('/')
             itemQ["link"].append(href_item)
-            if link_arr[0] == 'http:' or link_arr[0] == 'https:':
+            if link_arr[0] == 'http:':
                 try:
                     if link_arr[2] == self.allowed_domains:
-                        itemQ["link_type"].append("Absolute")
+                        itemQ["link_type"].append("Internal - Absolute - HTTP")
                     else:
-                        itemQ["link_type"].append("External")
+                        itemQ["link_type"].append("External - Absolute - HTTP")
+                except:
+                        itemQ["link_type"].append("Incorrect")
+            elif link_arr[0] == 'https:':
+                try:
+                    if link_arr[2] == self.allowed_domains:
+                        itemQ["link_type"].append("Internal - Absolute - HTTPS")
+                    else:
+                        itemQ["link_type"].append("External - Absolute - HTTPS")
                 except:
                         itemQ["link_type"].append("Incorrect")
             else:
-                itemQ["link_type"].append("Relative")
+                itemQ["link_type"].append("Internal - Relative")
         LxmlLinkExtractor(allow=()).extract_links(response)
         return itemQ
