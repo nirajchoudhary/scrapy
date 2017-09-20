@@ -12,3 +12,5 @@ class URLFilterForm(forms.Form):
     """URL filter form."""
     start_url = forms.CharField(max_length=256)
     link_type = forms.ChoiceField(choices=link_type_choices, required=False)
+    page_URL = forms.CharField(max_length=256, required=False)
+    link_input = forms.CharField(max_length=256, required=False)

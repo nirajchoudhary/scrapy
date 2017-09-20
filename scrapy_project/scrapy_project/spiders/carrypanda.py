@@ -14,7 +14,7 @@ class CarrypandaSpider(CrawlSpider):
     allowed_domains = []
     def __init__(self, *args, **kwargs):
         super(CarrypandaSpider, self).__init__(*args, **kwargs)
-        self.file_obj = open('url.txt', 'rb')
+        self.file_obj = open('url.txt', 'r')
         self.url = self.file_obj.read()
         self.file_obj.close()
         self.start_urls = [self.url] # ["http://carrypanda.com/"]
