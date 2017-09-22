@@ -44,8 +44,8 @@
                                 </div>
                                 <div class="row form-group">
                                     <div class="col-sm-11 offset-sm-1">
-                                        <button type="submit" class="btn btn-primary" id="submitBtn">Fetch Data</button>
-                                        <button type="button" class="btn btn-info" id="newFetchBtn">Clean and Fetch Data</button>
+                                        <button type="submit" class="btn btn-primary" id="submitBtn" title="Fetch data from db if not exist then crawl and fetch">Fetch Data</button>
+                                        <button type="button" class="btn btn-info" id="newFetchBtn" title="Clean db and fetch fresh data">Clean DB and Fetch Data</button>
                                         <img src="{% static '/image/loading.gif' %}" alt="Loading..." id="scrapyGif" height="30" width="30">
                                         <p class="text-danger" id="scrapyError"></p>
                                     </div>
@@ -61,7 +61,7 @@
                                                 <th>Link Type</th>
                                             </tr>
                                             <tr class="table-warning">
-                                                <th class="py-2 w-25">
+                                                <th class="py-2">
                                                     <form id="pageURLForm">
                                                         <div class="input-group input-group-sm">
                                                             <input type="text" id="page_URL" name="page_URL" placeholder="Page URL" maxlength="13" class="form-control">
@@ -73,7 +73,7 @@
                                                         </div>
                                                     </form>
                                                 </th>
-                                                <th class="py-2 w-50">
+                                                <th class="py-2">
                                                 <form id="linkForm">
                                                         <div class="input-group input-group-sm">
                                                             <input type="text" id="link_input" name="link_input" placeholder="Link" maxlength="13" class="form-control">
@@ -85,7 +85,7 @@
                                                         </div>
                                                     </form>
                                                 </th>
-                                                <th class="py-2 w-25">
+                                                <th class="py-2">
                                                     <select id="link_type" name="link_type" class="form-control form-control-sm">
                                                         <option value="-1" selected="">All Type</option>
                                                         <option value="Internal - Relative">Internal - Relative</option>

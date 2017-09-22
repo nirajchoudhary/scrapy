@@ -8,13 +8,13 @@ function getSuccess(result)
             tbody_html += "<td>  </td>";
         }
         else {
-            tbody_html += "<td><a href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
+            tbody_html += "<td style=\"width:30%!important;\"><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
                         + result.res_data[i].page_url + "</a></td>";
             page_url = result.res_data[i].page_url;
         }
-        tbody_html += "<td><a href=\"" + result.res_data[i].link +"\" target=\"_blank\">"
+        tbody_html += "<td style=\"width:50%!important;\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
                     +   result.res_data[i].link + "</a></td>"
-                    + "<td>" + result.res_data[i].link_type + "</td>"
+                    + "<td style=\"width:20%!important;\">" + result.res_data[i].link_type + "</td>"
                     + "</tr>";
     }
     if(result.res_data.length === 0) {
@@ -63,6 +63,7 @@ $(document).ready(function() {
         if(protocol !== "http:" && protocol !== "https:") {
             $("#scrapyError").text("Please prepend http or https.");
             return false;
+            $("#scrapyGif").hide();
         }
         $("#start_url").val(start_url);
         $("#scrapyGif").show();
@@ -133,6 +134,7 @@ $(document).ready(function() {
         var protocol = start_url.split("/")[0];
         if(protocol !== "http:" && protocol !== "https:") {
             $("#scrapyError").text("Please prepend http or https.");
+            $("#scrapyGif").hide();
             return false;
         }
         $("#start_url").val(start_url);
