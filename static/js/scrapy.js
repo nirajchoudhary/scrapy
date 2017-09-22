@@ -8,17 +8,23 @@ function getSuccess(result)
             tbody_html += "<td>  </td>";
         }
         else {
-            tbody_html += "<td style=\"width:30%!important;\"><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
+            tbody_html += "<td ><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
                         + result.res_data[i].page_url + "</a></td>";
             page_url = result.res_data[i].page_url;
         }
-        tbody_html += "<td style=\"width:50%!important;\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
+        tbody_html += "<td class=\"link_td\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
                     +   result.res_data[i].link + "</a></td>"
-                    + "<td style=\"width:20%!important;\">" + result.res_data[i].link_type + "</td>"
+                    + "<td class=\"link_type_td\">" + result.res_data[i].link_type + "</td>"
                     + "</tr>";
     }
     if(result.res_data.length === 0) {
         tbody_html = "<tr><td></td><td>No Data</td><td></td></tr>";
+    }
+    if(result.row_count === 0) {
+        $("#row_count").text(result.row_count + " record");
+    }
+    else {
+        $("#row_count").text(result.row_count + " records");
     }
     $("#url_tbody").html(tbody_html);
     $("#scrapyGif").hide();
@@ -78,8 +84,8 @@ $(document).ready(function() {
             processData: false,
             contentType: false,
             success: function(result) {
+                $("#scrapyError").text(result.msg);
                 linkTypeFilter();
-                $("#scrapyError").text("Successfull");
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
             },
@@ -146,11 +152,12 @@ $(document).ready(function() {
             type: "GET",
             url: "/freshCrawl/",
             data: {
-                start_url: $("#start_url").val()
+                start_url: $("#start_url").val(),
+                depth: $("#depth").val()
             },
             success: function(result) {
+                $("#scrapyError").text(result.msg);
                 linkTypeFilter();
-                $("#scrapyError").text("Successfull");
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
             },

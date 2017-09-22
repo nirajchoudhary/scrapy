@@ -97,13 +97,14 @@ class ScrapyViews(View):
         try:
             if 'userId' in request.session:
                 start_url = request.POST.get('start_url')
+                depth = request.POST.get('depth', '0')
                 try:
                     is_crawled = Url_List.objects.filter(
                         start_url=start_url).count()
                 except:
                     is_crawled = 0
                 if is_crawled:
-                    scrapyJson = json.dumps({"msg": "Successfull"})
+                    scrapyJson = json.dumps({"msg": "Fetch Successful."})
                     statusCode = 200
                     return HttpResponse(scrapyJson, 'application/json',
                         status=statusCode)
@@ -111,8 +112,15 @@ class ScrapyViews(View):
                 file_obj.write(start_url)
                 file_obj.close()
                 scrapyd = ScrapydAPI('http://localhost:6800')
-                job_id = scrapyd.schedule('default', 'carrypanda')
-                # url_list=[start_url])
+                if depth == '1':
+                    job_id = scrapyd.schedule('default', 'default_spider')
+                else:
+                    if depth == '0':
+                        settings = {"DEPTH_LIMIT": depth}
+                    else:
+                        settings = {"DEPTH_LIMIT": int(depth)-1}
+                    job_id = scrapyd.schedule('default', 'carrypanda',
+                        settings=settings)
                 while 1:
                     spider_status = scrapyd.job_status('default', job_id)
                     if spider_status == '':
@@ -125,7 +133,7 @@ class ScrapyViews(View):
                         print "In Panding"
                     if spider_status == 'finished':
                         print "Finished"
-                        scrapyJson = json.dumps({"msg": "Successfull"})
+                        scrapyJson = json.dumps({"msg": "Fetch Successful."})
                         statusCode = 200
                         break
                     time.sleep(1)
@@ -148,6 +156,7 @@ class FreshCrawlViews(View):
         try:
             if 'userId' in request.session:
                 start_url = request.GET.get('start_url')
+                depth = request.GET.get('depth', '0')
                 try:
                     is_crawled = Url_List.objects.filter(
                         start_url=start_url).delete()
@@ -158,10 +167,17 @@ class FreshCrawlViews(View):
                 file_obj.close()
                 # settings = {'JOBDIR': 'job_dir/'}
                 scrapyd = ScrapydAPI('http://localhost:6800')
-                job_id = scrapyd.schedule('default', 'carrypanda')
+                if depth == '1':
+                    job_id = scrapyd.schedule('default', 'default_spider')
+                else:
+                    if depth == '0':
+                        settings = {"DEPTH_LIMIT": depth}
+                    else:
+                        settings = {"DEPTH_LIMIT": int(depth)-1}
+                    job_id = scrapyd.schedule('default', 'carrypanda',
+                        settings=settings)
                 # , settings=settings)
                 # url_list=[start_url])
-                i = 1
                 while 1:
                     spider_status = scrapyd.job_status('default', job_id)
                     if spider_status == '':
@@ -170,14 +186,12 @@ class FreshCrawlViews(View):
                         break
                     if spider_status == 'running':
                         print "Still Running"
-                        # if i == 4:
-                        #     scrapyd.cancel('default', job_id)
-                        # i += 1
                     if spider_status == 'pending':
                         print "In Panding"
                     if spider_status == 'finished':
                         print "Finished"
-                        scrapyJson = json.dumps({"msg": "Successfull"})
+                        scrapyJson = json.dumps(
+                            {"msg": "Crawl and Fetch Successful"})
                         statusCode = 200
                         break
                     time.sleep(1)
@@ -215,10 +229,10 @@ class FilterViews(View):
                     if link_input:
                         filterQuery += ' and link like "%%{0}%%"'.format(link_input)
                     filterQuery += ' ;'
-                    print filterQuery
                     cursor = connection.cursor()
                     cursor.execute(filterQuery)
                     url_List = cursor.fetchall()
+                    row_count = len(url_List)
                     item_list = []
                     for url in url_List:
                         item = {}
@@ -226,8 +240,9 @@ class FilterViews(View):
                         item["link"] = url[1]
                         item["link_type"] = url[2]
                         item_list.append(item)
-                    scrapyJson = json.dumps({"msg": "Successfull",
-                                             "res_data": item_list})
+                    scrapyJson = json.dumps({"msg": "Successful",
+                                             "res_data": item_list,
+                                             "row_count": row_count})
                     statusCode = 200
                 else:
                     scrapyJson = json.dumps({"msg": str(form.errors)})

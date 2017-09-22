@@ -37,16 +37,23 @@
                         <div class="card-block white-bg">
                             <form id="scrapyForm">{% csrf_token %}
                                 <div class="row form-group">
-                                    <label for="start_url" class="col-sm-1 col-form-label text-sm-right ">URL</label>
+                                    <label for="start_url" class="col-sm-1 col-form-label text-sm-right">URL</label>
                                     <div class="col-sm-11">
                                         <input type="text" name="start_url" class="form-control" placeholder="Enter Page URL [e.g: http://carrypanda.com/]" maxlength="256" required id="start_url" />
                                     </div>
                                 </div>
                                 <div class="row form-group">
-                                    <div class="col-sm-11 offset-sm-1">
+                                    <label for="depth" class="col-sm-1 col-form-label text-sm-right">Depth:</label>
+                                    <div class="col-sm-1">
+                                        <input type="number" min="0" class="form-control" value="5" id="depth" name="depth">
+                                    </div>
+                                    <div class="col-sm-10">
                                         <button type="submit" class="btn btn-primary" id="submitBtn" title="Fetch crawled data from DB if already exists. Crawl and Fetch fresh data otherwise." data-toggle="tooltip">Fetch Data</button>
+
                                         <button type="button" class="btn btn-info" id="newFetchBtn" title="Crawl and Fetch fresh data" data-toggle="tooltip">Clean DB and Fetch Data</button>
                                         <img src="{% static '/image/loading.gif' %}" alt="Loading..." id="scrapyGif" height="30" width="30">
+                                    </div>
+                                    <div class="col-sm-11 offset-sm-1">
                                         <p class="text-danger" id="scrapyError"></p>
                                     </div>
                                 </div>
@@ -58,7 +65,10 @@
                                             <tr>
                                                 <th>Page URL</th>
                                                 <th>Link</th>
-                                                <th>Link Type</th>
+                                                <th>
+                                                    Link Type
+                                                    <span class="float-right" id="row_count"></span>
+                                                </th>
                                             </tr>
                                             <tr class="table-warning">
                                                 <th class="py-2">

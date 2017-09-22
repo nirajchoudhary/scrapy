@@ -9,7 +9,7 @@ from scrapy.selector import Selector
 
 
 class CarrypandaSpider(CrawlSpider):
-    name = "carrypanda"
+    name = "default_spider"
     start_urls = []
     allowed_domains = []
     def __init__(self, *args, **kwargs):
@@ -28,10 +28,8 @@ class CarrypandaSpider(CrawlSpider):
             self.www_prepend_domain = "www." + self.domain_url
             self.allowed_domains = [self.domain_url, self.www_prepend_domain]
 
-    rules = (Rule(LxmlLinkExtractor(
-        allow=()), callback='parse_obj', follow=True),)
 
-    def parse_obj(self, response):
+    def parse(self, response):
         itemQ = Item()
         itemQ["start_url"] = self.url
         itemQ["page_url"] = response.url

@@ -14,3 +14,15 @@
     word-wrap: break-word !important;
     word-break: break-all !important;
 }
+
+.page_url_td {
+    width: 30% !important;
+}
+
+.link_td {
+    width: 50% !important;
+}
+
+.link_type_td {
+    width: 20% !important;
+}
