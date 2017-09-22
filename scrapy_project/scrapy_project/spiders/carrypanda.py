@@ -20,7 +20,14 @@ class CarrypandaSpider(CrawlSpider):
         self.start_urls = [self.url] # ["http://carrypanda.com/"]
         # kwargs.pop('url_list', [])
         # self.start_urls = url_list
-        self.allowed_domains = [self.url.split("/")[2]]
+        self.domain_url = self.url.split("/")[2]
+        if self.domain_url.split(".")[0] == "www":
+            self.without_www_domain = self.domain_url.replace('www.', '')
+            self.allowed_domains = [self.domain_url, self.without_www_domain]
+        else:
+            self.www_prepend_domain = "www." + self.domain_url
+            self.allowed_domains = [self.domain_url, self.www_prepend_domain]
+
 
     rules = (Rule(LxmlLinkExtractor(
         allow=()), callback='parse_obj', follow=True),)
@@ -39,7 +46,7 @@ class CarrypandaSpider(CrawlSpider):
             itemQ["link"].append(href_item)
             if link_arr[0] == 'http:':
                 try:
-                    if link_arr[2] == self.allowed_domains:
+                    if link_arr[2] in self.allowed_domains:
                         itemQ["link_type"].append("Internal - Absolute - HTTP")
                     else:
                         itemQ["link_type"].append("External - Absolute - HTTP")
@@ -47,7 +54,7 @@ class CarrypandaSpider(CrawlSpider):
                         itemQ["link_type"].append("Incorrect")
             elif link_arr[0] == 'https:':
                 try:
-                    if link_arr[2] == self.allowed_domains:
+                    if link_arr[2] in self.allowed_domains:
                         itemQ["link_type"].append("Internal - Absolute - HTTPS")
                     else:
                         itemQ["link_type"].append("External - Absolute - HTTPS")
