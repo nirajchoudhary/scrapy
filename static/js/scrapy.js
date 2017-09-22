@@ -57,6 +57,7 @@ function linkTypeFilter()
 
 $(document).ready(function() {
     $("#scrapyGif").hide();
+    $('[data-toggle="tooltip"]').tooltip();
     $("#scrapyForm").on("submit", function() {
         var start_url = $("#start_url").val().trim();
         var protocol = start_url.split("/")[0];
