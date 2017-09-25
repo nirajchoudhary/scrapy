@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, RedirectView
 import json
 from scrapyd_api import ScrapydAPI
-from scrapy_app.models import Url_List
+from scrapy_app.models import Url_List, Start_Url_List
 from scrapy_app.forms import URLFilterForm
 import time
 from django.db import connection
@@ -99,8 +99,7 @@ class ScrapyViews(View):
                 start_url = request.POST.get('start_url')
                 depth = request.POST.get('depth', '0')
                 try:
-                    is_crawled = Url_List.objects.filter(
-                        start_url=start_url).count()
+                    is_crawled = Start_Url_List.objects.get(start_url=start_url)
                 except:
                     is_crawled = 0
                 if is_crawled:
@@ -158,7 +157,7 @@ class FreshCrawlViews(View):
                 start_url = request.GET.get('start_url')
                 depth = request.GET.get('depth', '0')
                 try:
-                    is_crawled = Url_List.objects.filter(
+                    is_crawled = Start_Url_List.objects.filter(
                         start_url=start_url).delete()
                 except:
                     is_crawled = 0
@@ -220,20 +219,22 @@ class FilterViews(View):
                     page_URL = request.GET.get('page_URL')
                     category = request.GET.get('category')
                     link_input = request.GET.get('link_input')
-                    filterQuery = 'select page_url, link, link_type, \
-                        url_category from url_list where start_url="{0}"'\
-                            .format(start_url)
+                    query = 'select ul.page_url, ul.link, ul.link_type, \
+                        ul.url_category from url_list as ul \
+                        join start_url_list as sul  \
+                        on sul.pk_id = ul.fk_start_url \
+                        where sul.start_url="{0}"'.format(start_url)
                     if link_type and link_type != '-1':
-                        filterQuery += ' and link_type="{0}"'.format(link_type)
+                        query += ' and ul.link_type="{0}"'.format(link_type)
                     if category and category != '-1':
-                        filterQuery += ' and url_category="{0}"'.format(category)
+                        query += ' and ul.url_category="{0}"'.format(category)
                     if page_URL:
-                        filterQuery += ' and page_url like "%%{0}%%"'.format(page_URL)
+                        query += ' and ul.page_url like "%%{0}%%"'.format(page_URL)
                     if link_input:
-                        filterQuery += ' and link like "%%{0}%%"'.format(link_input)
-                    filterQuery += ' ;'
+                        query += ' and ul.link like "%%{0}%%"'.format(link_input)
+                    query += ';'
                     cursor = connection.cursor()
-                    cursor.execute(filterQuery)
+                    cursor.execute(query)
                     url_List = cursor.fetchall()
                     row_count = len(url_List)
                     item_list = []
@@ -274,9 +275,10 @@ class GetPageURLViews(View):
         try:
             page_URL = request.GET.get('term', '')
             start_url = request.GET.get('start_url', '')
+            start_url_obj = Start_Url_List.objects.get(start_url=start_url)
             page_URL_list = Url_List.objects.values_list(
                 'page_url', flat=True).filter(
-                start_url=start_url, page_url__icontains=page_URL).distinct()
+                fk_start_url=start_url_obj, page_url__icontains=page_URL).distinct()
             page_url_results = []
             for page_url in page_URL_list:
                 page_url_dict = {}
@@ -304,9 +306,9 @@ class GetLinkViews(View):
         try:
             link = request.GET.get('term', '')
             start_url = request.GET.get('start_url', '')
-            link_list = Url_List.objects.values_list(
-                'link', flat=True).filter(
-                start_url=start_url, link__icontains=link).distinct()
+            start_url_obj = Start_Url_List.objects.get(start_url=start_url)
+            link_list = Url_List.objects.values_list('link', flat=True).filter(
+                fk_start_url=start_url_obj, link__icontains=link).distinct()
             link_results = []
             for link_item in link_list:
                 link_dict = {}
