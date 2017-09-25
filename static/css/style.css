@@ -15,14 +15,18 @@
     word-break: break-all !important;
 }
 
-.page_url_td {
-    width: 30% !important;
+.page_url_th {
+    width: 25% !important;
 }
 
-.link_td {
-    width: 50% !important;
+.link_th {
+    width: 45% !important;
 }
 
-.link_type_td {
-    width: 20% !important;
+.category_th {
+    width: 12% !important;
+}
+
+.link_type_th {
+    width: 18% !important;
 }

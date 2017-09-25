@@ -35,29 +35,65 @@ class CarrypandaSpider(CrawlSpider):
         itemQ["page_url"] = response.url
         itemQ["link"] = []
         itemQ["link_type"] = []
-        href_links = response.xpath('//@href').extract()
-        src_links = response.xpath('//@src').extract()
+        itemQ["url_category"] = []
+        href_links = response.xpath('//*[@href]').extract()
+        src_links = response.xpath('//*[@src]').extract()
         all_link = href_links + src_links
-        for href_item in all_link:
-            link_arr = href_item.split('/')
-            itemQ["link"].append(href_item)
-            if link_arr[0] == 'http:':
-                try:
-                    if link_arr[2] in self.allowed_domains:
-                        itemQ["link_type"].append("Internal - Absolute - HTTP")
-                    else:
-                        itemQ["link_type"].append("External - Absolute - HTTP")
-                except:
-                        itemQ["link_type"].append("Incorrect")
-            elif link_arr[0] == 'https:':
-                try:
-                    if link_arr[2] in self.allowed_domains:
-                        itemQ["link_type"].append("Internal - Absolute - HTTPS")
-                    else:
-                        itemQ["link_type"].append("External - Absolute - HTTPS")
-                except:
-                        itemQ["link_type"].append("Incorrect")
+        for link_item in all_link:
+            css_link = Selector(text=link_item).xpath(
+                '//link/@href').extract_first()
+            a_link = Selector(text=link_item).xpath(
+                '//a/@href').extract_first()
+            script = Selector(text=link_item).xpath(
+                '//script/@src').extract_first()
+            image = Selector(text=link_item).xpath(
+                '//img/@src').extract_first()
+            iframe = Selector(text=link_item).xpath(
+                '//iframe/@src').extract_first()
+            if css_link:
+                itemQ["url_category"].append("Link href")
+                itemQ["link"].append(css_link)
+                link_arr = css_link.split('/')
+            elif a_link:
+                itemQ["url_category"].append("Anchor href")
+                itemQ["link"].append(a_link)
+                link_arr = a_link.split('/')
+            elif script:
+                itemQ["url_category"].append("Script src")
+                itemQ["link"].append(script)
+                link_arr = script.split('/')
+            elif image:
+                itemQ["url_category"].append("Image src")
+                itemQ["link"].append(image)
+                link_arr = image.split('/')
+            elif iframe:
+                itemQ["url_category"].append("Iframe src")
+                itemQ["link"].append(iframe)
+                link_arr = iframe.split('/')
             else:
-                itemQ["link_type"].append("Internal - Relative")
+                itemQ["url_category"].append("Unknown")
+                itemQ["link"].append(link_item)
+                link_arr = ['Unknown']
+            try:
+                if link_arr[0] == 'http:':
+                    try:
+                        if link_arr[2] in self.allowed_domains:
+                            itemQ["link_type"].append("Internal - Absolute - HTTP")
+                        else:
+                            itemQ["link_type"].append("External - Absolute - HTTP")
+                    except:
+                            itemQ["link_type"].append("Incorrect")
+                elif link_arr[0] == 'https:':
+                    try:
+                        if link_arr[2] in self.allowed_domains:
+                            itemQ["link_type"].append("Internal - Absolute - HTTPS")
+                        else:
+                            itemQ["link_type"].append("External - Absolute - HTTPS")
+                    except:
+                            itemQ["link_type"].append("Incorrect")
+                else:
+                    itemQ["link_type"].append("Internal - Relative")
+            except:
+                itemQ["link_type"].append("Unknown")
         # LxmlLinkExtractor(allow=()).extract_links(response)
         return itemQ

@@ -13,3 +13,4 @@ class Item(scrapy.Item):
     page_url = scrapy.Field()
     link = scrapy.Field()
     link_type = scrapy.Field()
+    url_category = scrapy.Field()

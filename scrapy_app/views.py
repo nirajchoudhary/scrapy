@@ -218,12 +218,15 @@ class FilterViews(View):
                     start_url = request.GET.get('start_url')
                     link_type = request.GET.get('link_type')
                     page_URL = request.GET.get('page_URL')
+                    category = request.GET.get('category')
                     link_input = request.GET.get('link_input')
-                    filterQuery = 'select page_url, link, link_type \
-                        from url_list where start_url="{0}"'\
+                    filterQuery = 'select page_url, link, link_type, \
+                        url_category from url_list where start_url="{0}"'\
                             .format(start_url)
                     if link_type and link_type != '-1':
                         filterQuery += ' and link_type="{0}"'.format(link_type)
+                    if category and category != '-1':
+                        filterQuery += ' and url_category="{0}"'.format(category)
                     if page_URL:
                         filterQuery += ' and page_url like "%%{0}%%"'.format(page_URL)
                     if link_input:
@@ -239,6 +242,7 @@ class FilterViews(View):
                         item["page_url"] = url[0]
                         item["link"] = url[1]
                         item["link_type"] = url[2]
+                        item["url_category"] = url[3]
                         item_list.append(item)
                     scrapyJson = json.dumps({"msg": "Successful",
                                              "res_data": item_list,

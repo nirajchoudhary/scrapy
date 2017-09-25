@@ -18,6 +18,7 @@ class ScrapyProjectPipeline(object):
                 url_List.page_url = item["page_url"]
                 url_List.link = item["link"][i]
                 url_List.link_type = item["link_type"][i]
+                url_List.url_category = item["url_category"][i]
                 objList.append(url_List)
             Url_List.objects.bulk_create(objList)
         return item

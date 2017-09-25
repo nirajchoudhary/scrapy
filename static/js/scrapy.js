@@ -14,11 +14,12 @@ function getSuccess(result)
         }
         tbody_html += "<td class=\"link_td\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
                     +   result.res_data[i].link + "</a></td>"
+                    + "<td class=\"category_td\">" + result.res_data[i].url_category + "</td>"
                     + "<td class=\"link_type_td\">" + result.res_data[i].link_type + "</td>"
                     + "</tr>";
     }
     if(result.res_data.length === 0) {
-        tbody_html = "<tr><td></td><td>No Data</td><td></td></tr>";
+        tbody_html = "<tr><td></td><td>No Data</td><td></td><td></td></tr>";
     }
     if(result.row_count === 0) {
         $("#row_count").text(result.row_count + " record");
@@ -53,6 +54,7 @@ function linkTypeFilter()
             start_url: $("#start_url").val(),
             link_type: $("#link_type").val(),
             page_URL: $("#page_URL").val(),
+            category: $("#category").val(),
             link_input: $("#link_input").val()
         },
         success: getSuccess,
@@ -68,7 +70,7 @@ $(document).ready(function() {
         var start_url = $("#start_url").val().trim();
         var protocol = start_url.split("/")[0];
         if(protocol !== "http:" && protocol !== "https:") {
-            $("#scrapyError").text("Please prepend http or https.");
+            $("#scrapyError").text("Please prepend URL with http or https.");
             return false;
             $("#scrapyGif").hide();
         }
@@ -95,6 +97,9 @@ $(document).ready(function() {
     });
     // On change filter boxes
     $("#link_type").on("change", function() {
+        linkTypeFilter();
+    });
+    $("#category").on("change", function() {
         linkTypeFilter();
     });
     $("#page_URL").on("autocompleteselect", function (e, ui) {
@@ -140,7 +145,7 @@ $(document).ready(function() {
         var start_url = $("#start_url").val().trim();
         var protocol = start_url.split("/")[0];
         if(protocol !== "http:" && protocol !== "https:") {
-            $("#scrapyError").text("Please prepend http or https.");
+            $("#scrapyError").text("Please prepend URL with http or https.");
             $("#scrapyGif").hide();
             return false;
         }

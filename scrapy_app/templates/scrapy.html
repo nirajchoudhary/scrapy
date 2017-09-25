@@ -50,10 +50,11 @@
                                     <div class="col-sm-10">
                                         <button type="submit" class="btn btn-primary" id="submitBtn" title="Fetch crawled data from DB if already exists. Crawl and Fetch fresh data otherwise." data-toggle="tooltip">Fetch Data</button>
 
-                                        <button type="button" class="btn btn-info" id="newFetchBtn" title="Crawl and Fetch fresh data" data-toggle="tooltip">Clean DB and Fetch Data</button>
+                                        <button type="button" class="btn btn-info" id="newFetchBtn" title="Crawl and Fetch fresh data (First clean crawled data from DB if already exists)." data-toggle="tooltip">Clean DB and Fetch Data</button>
                                         <img src="{% static '/image/loading.gif' %}" alt="Loading..." id="scrapyGif" height="30" width="30">
                                     </div>
                                     <div class="col-sm-11 offset-sm-1">
+                                        <span class="form-text">depth = 0 means no depth limit</span>
                                         <p class="text-danger" id="scrapyError"></p>
                                     </div>
                                 </div>
@@ -63,9 +64,10 @@
                                     <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th>Page URL</th>
-                                                <th>Link</th>
-                                                <th>
+                                                <th class="page_url_th">Page URL</th>
+                                                <th class="link_th">Link</th>
+                                                <th class="category_th">Category</th>
+                                                <th class="link_type_th">
                                                     Link Type
                                                     <span class="float-right" id="row_count"></span>
                                                 </th>
@@ -74,7 +76,7 @@
                                                 <th class="py-2">
                                                     <form id="pageURLForm">
                                                         <div class="input-group input-group-sm">
-                                                            <input type="text" id="page_URL" name="page_URL" placeholder="Page URL" maxlength="13" class="form-control">
+                                                            <input type="text" id="page_URL" name="page_URL" placeholder="Page URL" class="form-control">
                                                             <span class="input-group-btn">
                                                                 <button class="btn btn-info" type="submit" id="searchPageURLBtn">
                                                                     <span class="fa fa-search"></span>
@@ -84,9 +86,9 @@
                                                     </form>
                                                 </th>
                                                 <th class="py-2">
-                                                <form id="linkForm">
+                                                    <form id="linkForm">
                                                         <div class="input-group input-group-sm">
-                                                            <input type="text" id="link_input" name="link_input" placeholder="Link" maxlength="13" class="form-control">
+                                                            <input type="text" id="link_input" name="link_input" placeholder="Link" class="form-control">
                                                             <span class="input-group-btn">
                                                                 <button class="btn btn-info" type="submit" id="searchLinkBtn">
                                                                     <span class="fa fa-search"></span>
@@ -94,6 +96,17 @@
                                                             </span>
                                                         </div>
                                                     </form>
+                                                </th>
+                                                <th class="py-2">
+                                                    <select id="category" name="category" class="form-control form-control-sm">
+                                                        <option value="-1" selected="">All Category</option>
+                                                        <option value="Link href">Link href</option>
+                                                        <option value="Anchor href">Anchor href</option>
+                                                        <option value="Script src">Script src</option>
+                                                        <option value="Image src">Image src</option>
+                                                        <option value="Iframe src">Iframe src</option>
+                                                        <option value="Unknown">Unknown</option>
+                                                    </select>
                                                 </th>
                                                 <th class="py-2">
                                                     <select id="link_type" name="link_type" class="form-control form-control-sm">
