@@ -2,6 +2,6 @@
 *.log
 *.py~
 .gitignore~
-migrations/*.*
+scrapy_app/migrations/*
 default.db
-twistd.pid
+scrapy_project/twistd.pid

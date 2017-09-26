@@ -51,29 +51,29 @@ class CarrypandaSpider(CrawlSpider):
             iframe = Selector(text=link_item).xpath(
                 '//iframe/@src').extract_first()
             if css_link:
-                itemQ["url_category"].append("Link href")
+                itemQ["url_category"].append("link href")
                 itemQ["link"].append(css_link)
                 link_arr = css_link.split('/')
             elif a_link:
-                itemQ["url_category"].append("Anchor href")
+                itemQ["url_category"].append("anchor href")
                 itemQ["link"].append(a_link)
                 link_arr = a_link.split('/')
             elif script:
-                itemQ["url_category"].append("Script src")
+                itemQ["url_category"].append("script src")
                 itemQ["link"].append(script)
                 link_arr = script.split('/')
             elif image:
-                itemQ["url_category"].append("Image src")
+                itemQ["url_category"].append("image src")
                 itemQ["link"].append(image)
                 link_arr = image.split('/')
             elif iframe:
-                itemQ["url_category"].append("Iframe src")
+                itemQ["url_category"].append("iframe src")
                 itemQ["link"].append(iframe)
                 link_arr = iframe.split('/')
             else:
-                itemQ["url_category"].append("Unknown")
+                itemQ["url_category"].append("unknown")
                 itemQ["link"].append(link_item)
-                link_arr = ['Unknown']
+                link_arr = ['unknown']
             try:
                 if link_arr[0] == 'http:':
                     try:

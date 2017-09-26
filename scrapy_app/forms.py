@@ -9,12 +9,12 @@ link_type_choices = [["-1", "All Type"],
                      ["External - Absolute - HTTPS", "Internal - Absolute - HTTPS"]]
 
 category_choices = [["-1", "All Category"],
-                     ["Link href", "Link href"],
-                     ["Anchor href", "Anchor href"],
-                     ["Script src", "Script src"],
-                     ["Image src", "Image src"],
-                     ["Iframe src", "Iframe src"],
-                     ["Unknown", "Unknown"]]
+                     ["link href", "link href"],
+                     ["anchor href", "anchor href"],
+                     ["script src", "script src"],
+                     ["image src", "image src"],
+                     ["iframe src", "iframe src"],
+                     ["unknown", "unknown"]]
 
 
 class URLFilterForm(forms.Form):
