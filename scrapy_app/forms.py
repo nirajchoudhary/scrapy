@@ -1,14 +1,14 @@
 from django import forms
 
 
-link_type_choices = [["-1", "All Type"],
+link_type_choices = [["-1", "All Types"],
                      ["Internal - Relative", "Internal - Relative"],
                      ["Internal - Absolute - HTTP", "Internal - Absolute - HTTP"],
                      ["Internal - Absolute - HTTPS", "Internal - Absolute - HTTPS"],
                      ["External - Absolute - HTTP", "Internal - Absolute - HTTP"],
                      ["External - Absolute - HTTPS", "Internal - Absolute - HTTPS"]]
 
-category_choices = [["-1", "All Category"],
+category_choices = [["-1", "All Categories"],
                      ["link href", "link href"],
                      ["anchor href", "anchor href"],
                      ["script src", "script src"],
