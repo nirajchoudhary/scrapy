@@ -25,3 +25,4 @@ class URLFilterForm(forms.Form):
     page_URL = forms.CharField(max_length=256, required=False)
     category = forms.ChoiceField(choices=category_choices, required=False)
     link_input = forms.CharField(max_length=256, required=False)
+    page_no = forms.IntegerField(min_value=1)

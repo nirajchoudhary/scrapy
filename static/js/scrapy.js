@@ -1,5 +1,38 @@
 function getSuccess(result)
 {
+    var pagination = "";
+    if(result.url_page.hasOtherPages) {
+        if(result.url_page.hasPreviousPage) {
+            pagination += "<li class=\"page-item\" title=\"First page\" onclick=\"return linkTypeFilter(1);\"><a class=\"page-link\" href=\"#\">&laquo;</a></li>";
+            pagination += "<li class=\"page-item\" title=\"Previous page\" onclick=\"return linkTypeFilter(" + result.url_page.previousPageNo + ");\"><a class=\"page-link\" href=\"#\">&lsaquo;</a></li>";
+        }
+        else {
+            pagination += "<li class=\"page-item disabled\" title=\"First page\"><a class=\"page-link\" href=\"#\">&laquo;</a></li>";
+            pagination += "<li class=\"page-item disabled\" title=\"Previous page\"><a class=\"page-link\" href=\"#\">&lsaquo;</a></li>";
+        }
+        totalPage = result.url_page.totalPage;
+        $("#totalPage").html("&nbsp; Total Pages: " + totalPage);
+        for(var i in result.url_page.pageRange) {
+            var pageLinkNo = result.url_page.pageRange[i];
+            if(result.url_page.currentPage === pageLinkNo) {
+                pagination += "<li class=\"page-item active\"><a class=\"page-link\" href=\"#\">" + pageLinkNo  + "</a></li>";
+            }
+            else {
+                pagination += "<li class=\"page-item\" onclick=\"return linkTypeFilter(" + pageLinkNo + ");\"><a class=\"page-link\" href=\"#\">" + pageLinkNo + "</a></li>";
+            }
+        }
+        if(result.url_page.hasNextPage) {
+            pagination += "<li class=\"page-item\" title=\"Next page\" onclick=\"return linkTypeFilter(" + result.url_page.nextPageNo + ");\"><a class=\"page-link\" href=\"#\">&rsaquo;</a></li>";
+            pagination += "<li class=\"page-item\" title=\"Last page\" onclick=\"return linkTypeFilter(" + totalPage + ");\"><a class=\"page-link\" href=\"#\">&raquo;</a></li>";
+        }
+        else {
+            pagination += "<li class=\"page-item disabled\" title=\"Next page\"><a class=\"page-link\" href=\"#\">&rsaquo;</a></li>";
+            pagination += "<li class=\"page-item disabled\" title=\"Last page\"><a class=\"page-link\" href=\"#\">&raquo;</a></li>";
+        }
+    }
+    else {
+        $("#totalPage").html("&nbsp; Total Page: 1");
+    }
     tbody_html = "";
     var page_url = "";
     for(var i in result.res_data) {
@@ -27,7 +60,9 @@ function getSuccess(result)
     else {
         $("#row_count").text(result.row_count + " records");
     }
+
     $("#url_tbody").html(tbody_html);
+    $("#urlPagination").html(pagination);
     $("#scrapyGif").hide();
 }
 
@@ -44,7 +79,7 @@ function getError(responseRes, textStatus, errorThrown)
     $("#scrapyGif").hide();
 }
 
-function linkTypeFilter()
+function linkTypeFilter(page_no)
 {
     $("#scrapyGif").show();
     $.ajax({
@@ -56,7 +91,8 @@ function linkTypeFilter()
             link_type: $("#link_type").val(),
             page_URL: $("#page_URL").val(),
             category: $("#category").val(),
-            link_input: $("#link_input").val()
+            link_input: $("#link_input").val(),
+            page_no: page_no,
         },
         success: getSuccess,
         error: getError
@@ -88,7 +124,7 @@ $(document).ready(function() {
             contentType: false,
             success: function(result) {
                 $("#scrapyError").text(result.msg);
-                linkTypeFilter();
+                linkTypeFilter(1);
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
             },
@@ -98,33 +134,33 @@ $(document).ready(function() {
     });
     // On change filter boxes
     $("#link_type").on("change", function() {
-        linkTypeFilter();
+        linkTypeFilter(1);
     });
     $("#category").on("change", function() {
-        linkTypeFilter();
+        linkTypeFilter(1);
     });
     $("#page_URL").on("autocompleteselect", function (e, ui) {
         $("#page_URL").val(ui.item.value);
-        linkTypeFilter();
+        linkTypeFilter(1);
     });
     $("#searchPageURLBtn").on("click", function(){
-        linkTypeFilter();
+        linkTypeFilter(1);
         return false;
     });
     $("#pageURLForm").on("submit", function() {
-        linkTypeFilter();
+        linkTypeFilter(1);
         return false;
     });
     $("#link_input").on("autocompleteselect", function (e, ui) {
         $("#link_input").val(ui.item.value);
-        linkTypeFilter();
+        linkTypeFilter(1);
     });
     $("#searchLinkBtn").on("click", function(){
-        linkTypeFilter();
+        linkTypeFilter(1);
         return false;
     });
     $("#linkForm").on("submit", function() {
-        linkTypeFilter();
+        linkTypeFilter(1);
         return false;
     });
     $("#page_URL").on('input keyup', function() {
@@ -163,7 +199,7 @@ $(document).ready(function() {
             },
             success: function(result) {
                 $("#scrapyError").text(result.msg);
-                linkTypeFilter();
+                linkTypeFilter(1);
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
             },

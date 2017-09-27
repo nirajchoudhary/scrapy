@@ -8,6 +8,8 @@ from scrapy_app.forms import URLFilterForm
 import time
 from django.db import connection
 import urllib2
+import math
+from collections import deque
 
 
 class LoginForm(View):
@@ -145,7 +147,7 @@ class ScrapyViews(View):
                         scrapyJson = json.dumps({"msg": "Fetch Successful."})
                         statusCode = 200
                         break
-                    time.sleep(1)
+                    time.sleep(2)
             else:
                 scrapyJson = json.dumps({"msg": "You must have logged in."})
                 statusCode = 403
@@ -213,7 +215,7 @@ class FreshCrawlViews(View):
                             {"msg": "Crawl and Fetch Successful"})
                         statusCode = 200
                         break
-                    time.sleep(1)
+                    time.sleep(2)
             else:
                 scrapyJson = json.dumps({"msg": "You must have logged in."})
                 statusCode = 403
@@ -240,6 +242,7 @@ class FilterViews(View):
                     page_URL = request.GET.get('page_URL')
                     category = request.GET.get('category')
                     link_input = request.GET.get('link_input')
+                    page_no = int(request.GET.get('page_no'))
                     query = 'select ul.page_url, ul.link, ul.link_type, \
                         ul.url_category from url_list as ul \
                         join start_url_list as sul  \
@@ -258,9 +261,13 @@ class FilterViews(View):
                     cursor = connection.cursor()
                     cursor.execute(query)
                     url_List = cursor.fetchall()
-                    row_count = len(url_List)
+                    records_per_page = 500
+                    row_count = len(list(url_List))
+                    url_page = pagination(row_count, page_no, records_per_page)
+                    start_row = (page_no - 1) * records_per_page
+                    end_row = page_no * records_per_page
                     item_list = []
-                    for url in url_List:
+                    for url in url_List[start_row: end_row]:
                         item = {}
                         item["page_url"] = url[0]
                         item["link"] = url[1]
@@ -269,7 +276,8 @@ class FilterViews(View):
                         item_list.append(item)
                     scrapyJson = json.dumps({"msg": "Successful",
                                              "res_data": item_list,
-                                             "row_count": row_count})
+                                             "row_count": row_count,
+                                             "url_page": url_page})
                     statusCode = 200
                 else:
                     scrapyJson = json.dumps({"msg": str(form.errors)})
@@ -343,3 +351,62 @@ class GetLinkViews(View):
             link_JSON = json.dumps({"msg": str(e)})
             statusCode = 500
         return HttpResponse(link_JSON, 'application/json', status=statusCode)
+
+
+def pagination(totalRows, currentPage, rowsInPage):
+    '''
+    General method for pagination. It accepts total number of rows,
+    current page number and total number of rows in one page and
+    return paginated data.
+    '''
+    totalPage = int(math.ceil(totalRows / float(rowsInPage)))
+    if 0 < currentPage < totalPage + 1:
+        if totalPage > 1:
+            hasOtherPages = True
+            if 1 < currentPage < totalPage:
+                hasNextPage = True
+                hasPreviousPage = True
+            elif currentPage == 1:
+                hasNextPage = True
+                hasPreviousPage = False
+            elif currentPage == totalPage and currentPage > 1:
+                hasNextPage = False
+                hasPreviousPage = True
+            paginationLen = 5
+            pageRange = deque()
+            if totalPage <= paginationLen:
+                pageRange = range(1, totalPage + 1)
+            else:
+                for page in range(currentPage - 2, currentPage + 3):
+                    if 0 < page < totalPage + 1:
+                        pageRange.append(page)
+                n = len(pageRange)
+                if n < paginationLen:
+                    if pageRange[n - 1] == totalPage:
+                        for page in range(pageRange[0] - 1, 0, -1):
+                            n += 1
+                            if n > paginationLen:
+                                break
+                            pageRange.appendleft(page)
+                    else:
+                        for page in range(pageRange[n - 1] + 1, totalPage + 1):
+                            n += 1
+                            if n > paginationLen:
+                                break
+                            pageRange.append(page)
+            previousPageNo = currentPage - 1
+            nextPageNo = currentPage + 1
+            return {"hasOtherPages": hasOtherPages,
+                    "currentPage": currentPage,
+                    "hasNextPage": hasNextPage,
+                    "hasPreviousPage": hasPreviousPage,
+                    "pageRange": list(pageRange),
+                    "previousPageNo": previousPageNo,
+                    "nextPageNo": nextPageNo,
+                    "totalPage": totalPage
+                    }
+        else:
+            hasOtherPages = False
+    else:
+        hasOtherPages = False
+    return {"hasOtherPages": hasOtherPages}

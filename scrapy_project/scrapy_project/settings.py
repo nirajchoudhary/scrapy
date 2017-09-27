@@ -106,5 +106,5 @@ from django.core.wsgi import get_wsgi_application
 
 application = get_wsgi_application()
 
-LOG_ENABLED = True
+LOG_ENABLED = False
 # JOBDIR = 'job_dir/'

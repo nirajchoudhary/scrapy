@@ -32,7 +32,11 @@
                 <div class="col-sm-12" id="scrapyDiv">
                     <div class="card card-outline-info mt-2">
                         <div class="card-header card-inverse card-info">
-                            <h6 class="card-title mb-0"><b>Scrapy</b></h6>
+                            <h6 class="card-title mb-0 float-left"><b>Scrapy</b></h6>
+                            <nav class="float-right">
+                                <ul class="pagination pagination-sm mb-0" id="urlPagination">
+                                </ul>
+                            </nav>
                         </div>
                         <div class="card-block white-bg">
                             <form id="scrapyForm">{% csrf_token %}

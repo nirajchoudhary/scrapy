@@ -75,9 +75,18 @@ class CarrypandaSpider(CrawlSpider):
                 itemQ["link"].append(iframe)
                 link_arr = iframe.split('/')
             else:
-                itemQ["url_category"].append("unknown")
-                itemQ["link"].append(link_item)
-                link_arr = ['unknown']
+                unknown_link = Selector(text=link_item).xpath(
+                    '//@href').extract_first()
+                unknown_src = Selector(text=link_item).xpath(
+                    '//@src').extract_first()
+                if unknown_link:
+                    itemQ["url_category"].append("unknown href")
+                    itemQ["link"].append(unknown_link)
+                    link_arr = unknown_link.split('/')
+                elif unknown_src:
+                    itemQ["url_category"].append("unknown src")
+                    itemQ["link"].append(unknown_src)
+                    link_arr = unknown_src.split('/')
             try:
                 if link_arr[0] == 'http:':
                     try:
