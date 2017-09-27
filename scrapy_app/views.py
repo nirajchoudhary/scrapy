@@ -7,8 +7,7 @@ from scrapy_app.models import Url_List, Start_Url_List
 from scrapy_app.forms import URLFilterForm
 import time
 from django.db import connection
-# from scrapy.crawler import CrawlerRunner
-# from scrapy.utils.project import get_project_settings
+import urllib2
 
 
 class LoginForm(View):
@@ -99,6 +98,13 @@ class ScrapyViews(View):
                 start_url = request.POST.get('start_url')
                 depth = request.POST.get('depth', '0')
                 try:
+                    f = urllib2.urlopen(start_url)
+                except urllib2.HTTPError as e:
+                    scrapyJson = json.dumps({"msg": str(e)})
+                    statusCode = 404
+                    return HttpResponse(scrapyJson, 'application/json',
+                        status=statusCode)
+                try:
                     is_crawled = Start_Url_List.objects.get(start_url=start_url)
                 except:
                     is_crawled = 0
@@ -156,6 +162,13 @@ class FreshCrawlViews(View):
             if 'userId' in request.session:
                 start_url = request.GET.get('start_url')
                 depth = request.GET.get('depth', '0')
+                try:
+                    f = urllib2.urlopen(start_url)
+                except urllib2.HTTPError as e:
+                    scrapyJson = json.dumps({"msg": str(e)})
+                    statusCode = 404
+                    return HttpResponse(scrapyJson, 'application/json',
+                        status=statusCode)
                 try:
                     is_crawled = Start_Url_List.objects.filter(
                         start_url=start_url).delete()

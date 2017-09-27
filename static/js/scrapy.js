@@ -33,7 +33,7 @@ function getSuccess(result)
 
 function getError(responseRes, textStatus, errorThrown)
 {
-    if(responseRes.status === 500 || responseRes.status === 400) {
+    if(responseRes.status === 500 || responseRes.status === 400 || responseRes.status === 404) {
         $("#scrapyError").html(responseRes.responseJSON.msg);
     }
     else {
