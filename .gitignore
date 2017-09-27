@@ -1,8 +1,8 @@
 *.pyc
 *.log
 *.py~
+*.txt
 .gitignore~
 scrapy_app/migrations/*
 default.db
 scrapy_project/twistd.pid
-url.txt

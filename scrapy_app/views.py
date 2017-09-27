@@ -97,13 +97,13 @@ class ScrapyViews(View):
             if 'userId' in request.session:
                 start_url = request.POST.get('start_url')
                 depth = request.POST.get('depth', '0')
-                try:
-                    f = urllib2.urlopen(start_url)
-                except Exception as e:
-                    scrapyJson = json.dumps({"msg": str(e)})
-                    statusCode = 200
-                    return HttpResponse(scrapyJson, 'application/json',
-                        status=statusCode)
+                # try:
+                #     f = urllib2.urlopen(start_url)
+                # except Exception as e:
+                #     scrapyJson = json.dumps({"msg": str(e)})
+                #     statusCode = 200
+                #     return HttpResponse(scrapyJson, 'application/json',
+                #         status=statusCode)
                 try:
                     is_crawled = Start_Url_List.objects.get(start_url=start_url)
                 except:
@@ -162,13 +162,13 @@ class FreshCrawlViews(View):
             if 'userId' in request.session:
                 start_url = request.GET.get('start_url')
                 depth = request.GET.get('depth', '0')
-                try:
-                    f = urllib2.urlopen(start_url)
-                except Exception as e:
-                    scrapyJson = json.dumps({"msg": str(e)})
-                    statusCode = 200
-                    return HttpResponse(scrapyJson, 'application/json',
-                        status=statusCode)
+                # try:
+                #     f = urllib2.urlopen(start_url)
+                # except Exception as e:
+                #     scrapyJson = json.dumps({"msg": str(e)})
+                #     statusCode = 200
+                #     return HttpResponse(scrapyJson, 'application/json',
+                #         status=statusCode)
                 try:
                     is_crawled = Start_Url_List.objects.filter(
                         start_url=start_url).delete()
