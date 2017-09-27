@@ -14,7 +14,8 @@ category_choices = [["-1", "All Categories"],
                      ["script src", "script src"],
                      ["image src", "image src"],
                      ["iframe src", "iframe src"],
-                     ["unknown", "unknown"]]
+                     ["unknown href", "unknown href"]
+                     ["unknown src", "unknown src"]]
 
 
 class URLFilterForm(forms.Form):
