@@ -52,6 +52,7 @@ function linkTypeFilter()
         url: "/urlFilter/",
         data: {
             start_url: $("#start_url").val(),
+            depth: $("#depth").val(),
             link_type: $("#link_type").val(),
             page_URL: $("#page_URL").val(),
             category: $("#category").val(),

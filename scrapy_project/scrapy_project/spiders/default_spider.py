@@ -17,6 +17,9 @@ class CarrypandaSpider(CrawlSpider):
         self.file_obj = open('url.txt', 'r')
         self.url = self.file_obj.read()
         self.file_obj.close()
+        self.depth_obj = open('depth.txt', 'r')
+        self.depth = self.depth_obj.read()
+        self.depth_obj.close()
         self.start_urls = [self.url] # ["http://carrypanda.com/"]
         # kwargs.pop('url_list', [])
         # self.start_urls = url_list
@@ -32,6 +35,7 @@ class CarrypandaSpider(CrawlSpider):
     def parse(self, response):
         itemQ = Item()
         itemQ["start_url"] = self.url
+        itemQ["depth"] = self.depth
         itemQ["page_url"] = response.url
         itemQ["link"] = []
         itemQ["link_type"] = []

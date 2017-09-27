@@ -15,10 +15,11 @@ class ScrapyProjectPipeline(object):
             current_time = datetime.now() + timedelta(hours=5, minutes=30)
             try:
                 start_url_List = Start_Url_List.objects.get(
-                    start_url=item["start_url"])
+                    start_url=item["start_url"], depth=item["depth"])
             except:
                 start_url_List = Start_Url_List()
                 start_url_List.start_url = item["start_url"]
+                start_url_List.depth = item["depth"]
                 start_url_List.executed_on = current_time
                 start_url_List.save()
             objList = []

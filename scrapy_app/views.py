@@ -105,7 +105,8 @@ class ScrapyViews(View):
                 #     return HttpResponse(scrapyJson, 'application/json',
                 #         status=statusCode)
                 try:
-                    is_crawled = Start_Url_List.objects.get(start_url=start_url)
+                    is_crawled = Start_Url_List.objects.get(start_url=start_url,
+                                                            depth=depth)
                 except:
                     is_crawled = 0
                 if is_crawled:
@@ -116,6 +117,9 @@ class ScrapyViews(View):
                 file_obj = open('scrapy_project/url.txt', 'w')
                 file_obj.write(start_url)
                 file_obj.close()
+                depth_obj = open('scrapy_project/depth.txt', 'w')
+                depth_obj.write(depth)
+                depth_obj.close()
                 scrapyd = ScrapydAPI('http://localhost:6800')
                 if depth == '1':
                     job_id = scrapyd.schedule('default', 'default_spider')
@@ -171,12 +175,15 @@ class FreshCrawlViews(View):
                 #         status=statusCode)
                 try:
                     is_crawled = Start_Url_List.objects.filter(
-                        start_url=start_url).delete()
+                        start_url=start_url, depth=depth).delete()
                 except:
                     is_crawled = 0
                 file_obj = open('scrapy_project/url.txt', 'w')
                 file_obj.write(start_url)
                 file_obj.close()
+                depth_obj = open('scrapy_project/depth.txt', 'w')
+                depth_obj.write(depth)
+                depth_obj.close()
                 # settings = {'JOBDIR': 'job_dir/'}
                 scrapyd = ScrapydAPI('http://localhost:6800')
                 if depth == '1':
@@ -228,6 +235,7 @@ class FilterViews(View):
                 form = URLFilterForm(request.GET)
                 if form.is_valid():
                     start_url = request.GET.get('start_url')
+                    depth = request.GET.get('depth', '0')
                     link_type = request.GET.get('link_type')
                     page_URL = request.GET.get('page_URL')
                     category = request.GET.get('category')
@@ -236,7 +244,8 @@ class FilterViews(View):
                         ul.url_category from url_list as ul \
                         join start_url_list as sul  \
                         on sul.pk_id = ul.fk_start_url \
-                        where sul.start_url="{0}"'.format(start_url)
+                        where sul.start_url="{0}" and sul.depth={1}'\
+                        .format(start_url, depth)
                     if link_type and link_type != '-1':
                         query += ' and ul.link_type="{0}"'.format(link_type)
                     if category and category != '-1':

@@ -20,6 +20,7 @@ category_choices = [["-1", "All Categories"],
 class URLFilterForm(forms.Form):
     """URL filter form."""
     start_url = forms.CharField(max_length=256)
+    depth = forms.IntegerField(min_value=0)
     link_type = forms.ChoiceField(choices=link_type_choices, required=False)
     page_URL = forms.CharField(max_length=256, required=False)
     category = forms.ChoiceField(choices=category_choices, required=False)

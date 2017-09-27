@@ -6,6 +6,7 @@ from django.db import models
 class Start_Url_List(models.Model):
     pk_id = models.AutoField(primary_key=True, db_column="pk_id")
     start_url = models.CharField(max_length=1024)
+    depth = models.IntegerField()
     executed_on = models.DateTimeField()
 
     class Meta:
