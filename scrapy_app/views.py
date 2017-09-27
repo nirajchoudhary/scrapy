@@ -99,9 +99,9 @@ class ScrapyViews(View):
                 depth = request.POST.get('depth', '0')
                 try:
                     f = urllib2.urlopen(start_url)
-                except urllib2.HTTPError as e:
+                except Exception as e:
                     scrapyJson = json.dumps({"msg": str(e)})
-                    statusCode = 404
+                    statusCode = 200
                     return HttpResponse(scrapyJson, 'application/json',
                         status=statusCode)
                 try:
@@ -164,9 +164,9 @@ class FreshCrawlViews(View):
                 depth = request.GET.get('depth', '0')
                 try:
                     f = urllib2.urlopen(start_url)
-                except urllib2.HTTPError as e:
+                except Exception as e:
                     scrapyJson = json.dumps({"msg": str(e)})
-                    statusCode = 404
+                    statusCode = 200
                     return HttpResponse(scrapyJson, 'application/json',
                         status=statusCode)
                 try:
