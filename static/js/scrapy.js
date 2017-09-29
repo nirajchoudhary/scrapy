@@ -120,6 +120,7 @@ $(document).ready(function() {
             type: "POST",
             url: "/ScrapyView/",
             data: formData,
+            timeout: 3000000,
             processData: false,
             contentType: false,
             success: function(result) {
@@ -193,6 +194,7 @@ $(document).ready(function() {
         $.ajax({
             type: "GET",
             url: "/freshCrawl/",
+            timeout: 3000000,
             data: {
                 start_url: $("#start_url").val(),
                 depth: $("#depth").val()
