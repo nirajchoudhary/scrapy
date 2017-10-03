@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View, RedirectView
 import json
 from scrapyd_api import ScrapydAPI
-from scrapy_app.models import Url_List, Start_Url_List
+from scrapy_app.models import Url_List, Start_Url_List, Page_Url_List
 from scrapy_app.forms import URLFilterForm
 import time
 from django.db import connection
@@ -112,7 +112,8 @@ class ScrapyViews(View):
                 except:
                     is_crawled = 0
                 if is_crawled:
-                    scrapyJson = json.dumps({"msg": "Fetch Successful."})
+                    scrapyJson = json.dumps({"msg": "Fetch Successful.",
+                                             "job_id": ""})
                     statusCode = 200
                     return HttpResponse(scrapyJson, 'application/json',
                         status=statusCode)
@@ -135,24 +136,29 @@ class ScrapyViews(View):
                 while 1:
                     spider_status = scrapyd.job_status('default', job_id)
                     if spider_status == '':
-                        scrapyJson = json.dumps({"msg": "Issue in Crawling."})
+                        scrapyJson = json.dumps({"msg": "Issue in Crawling.",
+                                                 "job_id": ""})
                         statusCode = 500
                         break
                     if spider_status == 'running':
-                        print "Still Running"
+                        scrapyJson = json.dumps({"msg": "Still Running...",
+                                                 "job_id": job_id})
+                        statusCode = 200
+                        break
                     if spider_status == 'pending':
                         print "In Panding"
                     if spider_status == 'finished':
                         print "Finished"
-                        scrapyJson = json.dumps({"msg": "Fetch Successful."})
+                        scrapyJson = json.dumps({"msg": "Fetch Successful.",
+                                                 "job_id": ""})
                         statusCode = 200
                         break
                     time.sleep(2)
             else:
                 scrapyJson = json.dumps({"msg": "You must have logged in."})
-                statusCode = 403
+                statusCode = 401
         except Exception as e:
-            scrapyJson = json.dumps({"msg": str(e)})
+            scrapyJson = json.dumps({"msg": str(e), "job_id": ""})
             statusCode = 500
         return HttpResponse(scrapyJson, 'application/json', status=statusCode)
 
@@ -202,25 +208,30 @@ class FreshCrawlViews(View):
                 while 1:
                     spider_status = scrapyd.job_status('default', job_id)
                     if spider_status == '':
-                        scrapyJson = json.dumps({"msg": "Issue in Crawling."})
+                        scrapyJson = json.dumps({"msg": "Issue in Crawling.",
+                                                 "job_id": ""})
                         statusCode = 500
                         break
                     if spider_status == 'running':
-                        print "Still Running"
+                        scrapyJson = json.dumps({"msg": "Still Running...",
+                                                 "job_id": job_id})
+                        statusCode = 200
+                        break
                     if spider_status == 'pending':
                         print "In Panding"
                     if spider_status == 'finished':
                         print "Finished"
                         scrapyJson = json.dumps(
-                            {"msg": "Crawl and Fetch Successful"})
+                            {"msg": "Crawl and Fetch Successful.",
+                             "job_id": ""})
                         statusCode = 200
                         break
                     time.sleep(2)
             else:
                 scrapyJson = json.dumps({"msg": "You must have logged in."})
-                statusCode = 403
+                statusCode = 401
         except Exception as e:
-            scrapyJson = json.dumps({"msg": str(e)})
+            scrapyJson = json.dumps({"msg": str(e), "job_id": ""})
             statusCode = 500
         return HttpResponse(scrapyJson, 'application/json', status=statusCode)
 
@@ -236,6 +247,28 @@ class FilterViews(View):
             if 'userId' in request.session:
                 form = URLFilterForm(request.GET)
                 if form.is_valid():
+                    job_id = request.GET.get('job_id')
+                    is_finished = True
+                    msg = "Fetch Successful."
+                    if job_id:
+                        scrapyd = ScrapydAPI('http://localhost:6800')
+                        spider_status = scrapyd.job_status('default', job_id)
+                        if spider_status == '':
+                            msg = "Issue in Crawling."
+                            job_id = ""
+                            is_finished = True
+                        if spider_status == 'running':
+                            msg = "Still Running..."
+                            job_id = job_id
+                            is_finished = False
+                        if spider_status == 'pending':
+                            msg = "In Panding..."
+                            job_id = job_id
+                            is_finished = False
+                        if spider_status == 'finished':
+                            msg = "Crawl and Fetch Successful."
+                            job_id = ""
+                            is_finished = True
                     start_url = request.GET.get('start_url')
                     depth = request.GET.get('depth', '0')
                     link_type = request.GET.get('link_type')
@@ -243,10 +276,13 @@ class FilterViews(View):
                     category = request.GET.get('category')
                     link_input = request.GET.get('link_input')
                     page_no = int(request.GET.get('page_no'))
-                    query = 'select ul.page_url, ul.link, ul.link_type, \
-                        ul.url_category from url_list as ul \
-                        join start_url_list as sul  \
-                        on sul.pk_id = ul.fk_start_url \
+                    query = 'select pul.page_url, ul.link, ul.link_type, \
+                        ul.url_category, sul.page_count, \
+                        pul.link_count from url_list as ul \
+                        join page_url_list as pul \
+                        on pul.pk_id = ul.fk_page_url \
+                        join start_url_list as sul \
+                        on sul.pk_id = pul.fk_start_url \
                         where sul.start_url="{0}" and sul.depth={1}'\
                         .format(start_url, depth)
                     if link_type and link_type != '-1':
@@ -254,7 +290,7 @@ class FilterViews(View):
                     if category and category != '-1':
                         query += ' and ul.url_category="{0}"'.format(category)
                     if page_URL:
-                        query += ' and ul.page_url like "%%{0}%%"'.format(page_URL)
+                        query += ' and pul.page_url like "%%{0}%%"'.format(page_URL)
                     if link_input:
                         query += ' and ul.link like "%%{0}%%"'.format(link_input)
                     query += ';'
@@ -273,21 +309,27 @@ class FilterViews(View):
                         item["link"] = url[1]
                         item["link_type"] = url[2]
                         item["url_category"] = url[3]
+                        item["link_count"] = url[5]
                         item_list.append(item)
-                    scrapyJson = json.dumps({"msg": "Successful",
+                    if row_count == 0:
+                        page_count = 0
+                    else:
+                        page_count = url_List[0][4]
+                    scrapyJson = json.dumps({"msg": msg,
                                              "res_data": item_list,
                                              "row_count": row_count,
-                                             "url_page": url_page})
+                                             "url_page": url_page,
+                                             "page_count": page_count,
+                                             "is_finished": is_finished})
                     statusCode = 200
                 else:
                     scrapyJson = json.dumps({"msg": str(form.errors)})
                     statusCode = 400
             else:
                 scrapyJson = json.dumps({"msg": "You must have logged in."})
-                statusCode = 403
+                statusCode = 401
         except Exception as e:
-            print e
-            scrapyJson = json.dumps({"msg": str(e)})
+            scrapyJson = json.dumps({"msg": str(e), "job_id": ""})
             statusCode = 500
         return HttpResponse(scrapyJson, 'application/json', status=statusCode)
 
@@ -305,10 +347,12 @@ class GetPageURLViews(View):
         try:
             page_URL = request.GET.get('term', '')
             start_url = request.GET.get('start_url', '')
-            start_url_obj = Start_Url_List.objects.get(start_url=start_url)
-            page_URL_list = Url_List.objects.values_list(
+            depth = request.GET.get('depth', '0')
+            start_url_obj = Start_Url_List.objects.get(start_url=start_url,
+                                                        depth=depth)
+            page_URL_list = Page_Url_List.objects.values_list(
                 'page_url', flat=True).filter(
-                fk_start_url=start_url_obj, page_url__icontains=page_URL).distinct()
+                fk_start_url=start_url_obj, page_url__icontains=page_URL)
             page_url_results = []
             for page_url in page_URL_list:
                 page_url_dict = {}
@@ -336,14 +380,23 @@ class GetLinkViews(View):
         try:
             link = request.GET.get('term', '')
             start_url = request.GET.get('start_url', '')
-            start_url_obj = Start_Url_List.objects.get(start_url=start_url)
-            link_list = Url_List.objects.values_list('link', flat=True).filter(
-                fk_start_url=start_url_obj, link__icontains=link).distinct()
+            depth = request.GET.get('depth', '0')
+            query = 'select distinct ul.link from url_list as ul \
+                    join page_url_list as pul \
+                    on pul.pk_id = ul.fk_page_url \
+                    join start_url_list as sul \
+                    on sul.pk_id = pul.fk_start_url \
+                    where sul.start_url="{0}" and sul.depth={1} and \
+                    ul.link like "%%{2}%%"'.format(start_url, depth, link)
+            query += ';'
+            cursor = connection.cursor()
+            cursor.execute(query)
+            link_list = cursor.fetchall()
             link_results = []
             for link_item in link_list:
                 link_dict = {}
-                link_dict['label'] = link_item
-                link_dict['value'] = link_item
+                link_dict['label'] = link_item[0]
+                link_dict['value'] = link_item[0]
                 link_results.append(link_dict)
             link_JSON = json.dumps(link_results)
             statusCode = 200

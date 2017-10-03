@@ -32,11 +32,7 @@
                 <div class="col-sm-12" id="scrapyDiv">
                     <div class="card card-outline-info mt-2">
                         <div class="card-header card-inverse card-info">
-                            <h6 class="card-title mb-0 float-left"><b>Scrapy</b></h6>
-                            <nav class="float-right">
-                                <ul class="pagination pagination-sm mb-0" id="urlPagination">
-                                </ul>
-                            </nav>
+                            <h6 class="card-title mb-0"><b>Scrapy</b></h6>
                         </div>
                         <div class="card-block white-bg">
                             <form id="scrapyForm">{% csrf_token %}
@@ -63,12 +59,20 @@
                                     </div>
                                 </div>
                             </form>
+                            <input type="hidden" id="job_id">
+                            <hr>
+                            <ul class="pagination mb-0 float-left" id="urlPagination"></ul>
+                            <span class="float-left py-2" id="totalPage"></span>
+                            <div class="clearfix"></div>
                             <div class="row">
                                 <div class="col-sm-12 table-responsive">
                                     <table class="table table-striped table-hover">
                                         <thead>
                                             <tr>
-                                                <th class="page_url_th">Page URL</th>
+                                                <th class="page_url_th">
+                                                    Page URL
+                                                    <span id="page_count"></span>
+                                                </th>
                                                 <th class="link_th">Link</th>
                                                 <th class="category_th">Category</th>
                                                 <th class="link_type_th">

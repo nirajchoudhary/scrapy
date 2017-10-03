@@ -11,7 +11,7 @@ function getSuccess(result)
             pagination += "<li class=\"page-item disabled\" title=\"Previous page\"><a class=\"page-link\" href=\"#\">&lsaquo;</a></li>";
         }
         totalPage = result.url_page.totalPage;
-        $("#totalPage").html("&nbsp; Total Pages: " + totalPage);
+        $("#totalPage").html("&nbsp; Total Pages in Pagination: " + totalPage);
         for(var i in result.url_page.pageRange) {
             var pageLinkNo = result.url_page.pageRange[i];
             if(result.url_page.currentPage === pageLinkNo) {
@@ -31,7 +31,7 @@ function getSuccess(result)
         }
     }
     else {
-        $("#totalPage").html("&nbsp; Total Page: 1");
+        $("#totalPage").html("");
     }
     tbody_html = "";
     var page_url = "";
@@ -42,7 +42,8 @@ function getSuccess(result)
         }
         else {
             tbody_html += "<td ><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
-                        + result.res_data[i].page_url + "</a></td>";
+                        + result.res_data[i].page_url + "</a><br>(Total Links: "
+                        + result.res_data[i].link_count + ")</td>";
             page_url = result.res_data[i].page_url;
         }
         tbody_html += "<td class=\"link_td\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
@@ -59,11 +60,21 @@ function getSuccess(result)
     }
     else {
         $("#row_count").text(result.row_count + " records");
+        $("#page_count").html("&nbsp;(Total Pages: " + result.page_count + ")");
     }
 
     $("#url_tbody").html(tbody_html);
     $("#urlPagination").html(pagination);
-    $("#scrapyGif").hide();
+    if(result.is_finished) {
+        $("#job_id").val("");
+        $("#scrapyError").text(result.msg);
+        $("#scrapyGif").hide();
+    }
+    else {
+        setTimeout(function() {
+            linkTypeFilter(1);
+        }, 5000);
+    }
 }
 
 function getError(responseRes, textStatus, errorThrown)
@@ -71,9 +82,13 @@ function getError(responseRes, textStatus, errorThrown)
     if(responseRes.status === 500 || responseRes.status === 400 || responseRes.status === 404) {
         $("#scrapyError").html(responseRes.responseJSON.msg);
     }
+    else if(responseRes.status === 401) {
+        window.location.replace("/Login/");
+    }
     else {
         $("#scrapyError").text("Error during connecting server..");
     }
+    $("#job_id").val("");
     $("#submitBtn").prop("disabled", false);
     $("#newFetchBtn").prop("disabled", false);
     $("#scrapyGif").hide();
@@ -86,6 +101,7 @@ function linkTypeFilter(page_no)
         type: "GET",
         url: "/urlFilter/",
         data: {
+            job_id: $("#job_id").val(),
             start_url: $("#start_url").val(),
             depth: $("#depth").val(),
             link_type: $("#link_type").val(),
@@ -125,6 +141,7 @@ $(document).ready(function() {
             contentType: false,
             success: function(result) {
                 $("#scrapyError").text(result.msg);
+                $("#job_id").val(result.job_id);
                 linkTypeFilter(1);
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
@@ -165,15 +182,19 @@ $(document).ready(function() {
         return false;
     });
     $("#page_URL").on('input keyup', function() {
+        var start_url = $("#start_url").val();
+        var depth = $("#depth").val();
         $("#page_URL").autocomplete({
-            source: "/getPageURL/?start_url=" + $("#start_url").val(),
+            source: "/getPageURL/?start_url=" + start_url + "&depth=" + depth,
             minLength: 2,
             autoFocus: true,
         });
     });
     $("#link_input").on('input keyup', function() {
+        var start_url = $("#start_url").val();
+        var depth = $("#depth").val();
         $("#link_input").autocomplete({
-            source: "/getLink/?start_url=" + $("#start_url").val(),
+            source: "/getLink/?start_url=" + start_url + "&depth=" + depth,
             minLength: 2,
             autoFocus: true,
         });
@@ -201,6 +222,7 @@ $(document).ready(function() {
             },
             success: function(result) {
                 $("#scrapyError").text(result.msg);
+                $("#job_id").val(result.job_id);
                 linkTypeFilter(1);
                 $("#submitBtn").prop("disabled", false);
                 $("#newFetchBtn").prop("disabled", false);
