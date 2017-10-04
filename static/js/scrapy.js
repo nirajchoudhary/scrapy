@@ -59,7 +59,13 @@ function getSuccess(result)
         $("#row_count").text(result.row_count + " record");
     }
     else {
-        $("#row_count").text(result.row_count + " records");
+        if(result.row_count === 1) {
+            $("#row_count").text(result.row_count + " record");
+        }
+        else {
+            $("#row_count").text(result.row_count + " records");
+        }
+
         if(result.page_count === 1) {
             $("#page_count").html("&nbsp;(Total Page: " + result.page_count + ")");
         }
