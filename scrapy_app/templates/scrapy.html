@@ -46,15 +46,20 @@
                                     <label for="depth" class="col-sm-1 col-form-label text-sm-right">Depth:</label>
                                     <div class="col-sm-1">
                                         <input type="number" min="0" class="form-control" value="1" id="depth" name="depth">
+                                        <p class="form-text">depth = 0 means no depth limit</p>
                                     </div>
-                                    <div class="col-sm-10">
-                                        <button type="submit" class="btn btn-primary" id="submitBtn" title="Fetch crawled data from DB if already exists. Crawl and Fetch fresh data otherwise.">Fetch Data</button>
-
-                                        <button type="button" class="btn btn-info" id="newFetchBtn" title="Crawl and Fetch fresh data (First clean crawled data from DB if already exists).">Clean DB and Fetch Data</button>
+                                    <div class="col-sm-2">
+                                        <button type="submit" class="btn btn-primary w-100" id="submitBtn" title="Fetch crawled data from DB if already exists. Crawl and Fetch fresh data otherwise.">Fetch Data</button>
+                                        <p class="form-text">Fetch crawled data from DB if already exists. Crawl and Fetch fresh data otherwise.</p>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button type="button" class="btn btn-info w-100" id="newFetchBtn" title="Crawl and Fetch fresh data (First clean crawled data from DB if already exists).">Clean DB and Fetch Data</button>
+                                        <p class="form-text">Crawl and Fetch fresh data (First clean crawled data from DB if already exists).</p>
+                                    </div>
+                                    <div class="col-sm-6">
                                         <img src="{% static '/image/loading.gif' %}" alt="Loading..." id="scrapyGif" height="30" width="30">
                                     </div>
                                     <div class="col-sm-11 offset-sm-1">
-                                        <span class="form-text">depth = 0 means no depth limit</span>
                                         <p class="text-danger" id="scrapyError"></p>
                                     </div>
                                 </div>
