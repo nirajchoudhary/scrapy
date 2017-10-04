@@ -60,7 +60,12 @@ function getSuccess(result)
     }
     else {
         $("#row_count").text(result.row_count + " records");
-        $("#page_count").html("&nbsp;(Total Pages: " + result.page_count + ")");
+        if(result.page_count === 1) {
+            $("#page_count").html("&nbsp;(Total Page: " + result.page_count + ")");
+        }
+        else {
+            $("#page_count").html("&nbsp;(Total Pages: " + result.page_count + ")");
+        }
     }
 
     $("#url_tbody").html(tbody_html);
