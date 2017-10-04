@@ -279,7 +279,7 @@ class FilterViews(View):
                     query = 'select pul.page_url, ul.link, ul.link_type, \
                         ul.url_category, sul.page_count, \
                         pul.link_count from url_list as ul \
-                        join page_url_list as pul \
+                        right outer join page_url_list as pul \
                         on pul.pk_id = ul.fk_page_url \
                         join start_url_list as sul \
                         on sul.pk_id = pul.fk_start_url \
@@ -303,6 +303,12 @@ class FilterViews(View):
                     start_row = (page_no - 1) * records_per_page
                     end_row = page_no * records_per_page
                     item_list = []
+                    page_url_data = ""
+                    page_count = 0
+                    for url in url_List:
+                        if page_url_data != url[0]:
+                            page_count += 1
+                            page_url_data = url[0]
                     for url in url_List[start_row: end_row]:
                         item = {}
                         item["page_url"] = url[0]
@@ -311,10 +317,6 @@ class FilterViews(View):
                         item["url_category"] = url[3]
                         item["link_count"] = url[5]
                         item_list.append(item)
-                    if row_count == 0:
-                        page_count = 0
-                    else:
-                        page_count = url_List[0][4]
                     scrapyJson = json.dumps({"msg": msg,
                                              "res_data": item_list,
                                              "row_count": row_count,

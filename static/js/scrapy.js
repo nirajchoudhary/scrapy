@@ -37,41 +37,46 @@ function getSuccess(result)
     var page_url = "";
     for(var i in result.res_data) {
         tbody_html += "<tr>";
-        if(page_url === result.res_data[i].page_url){
-            tbody_html += "<td>  </td>";
+        if(result.res_data[i].link_count > 0) {
+            if(page_url === result.res_data[i].page_url){
+                tbody_html += "<td>  </td>";
+            }
+            else {
+                tbody_html += "<td><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
+                            + result.res_data[i].page_url + "</a><br>(Total Links: "
+                            + result.res_data[i].link_count + ")</td>";
+                page_url = result.res_data[i].page_url;
+            }
+            tbody_html += "<td class=\"link_td\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
+                        +   result.res_data[i].link + "</a></td>"
+                        + "<td class=\"category_td\">" + result.res_data[i].url_category + "</td>"
+                        + "<td class=\"link_type_td\">" + result.res_data[i].link_type + "</td>"
+                        + "</tr>";
         }
         else {
-            tbody_html += "<td ><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
-                        + result.res_data[i].page_url + "</a><br>(Total Links: "
-                        + result.res_data[i].link_count + ")</td>";
-            page_url = result.res_data[i].page_url;
+            tbody_html += "<td><a class=\"urlBreak\" href=\"" + result.res_data[i].page_url +"\" target=\"_blank\">"
+                        + result.res_data[i].page_url + "</a><br>(Total Link: "
+                        + result.res_data[i].link_count + ")</td>"
+                        + "<td>No link on this page</td>"
+                        + "<td>unknown</td><td>unknown</td>"
+                        + "</tr>";
         }
-        tbody_html += "<td class=\"link_td\"><a href=\"" + result.res_data[i].link +"\" target=\"_blank\" class=\"urlBreak\">"
-                    +   result.res_data[i].link + "</a></td>"
-                    + "<td class=\"category_td\">" + result.res_data[i].url_category + "</td>"
-                    + "<td class=\"link_type_td\">" + result.res_data[i].link_type + "</td>"
-                    + "</tr>";
     }
     if(result.res_data.length === 0) {
         tbody_html = "<tr><td></td><td>No Data</td><td></td><td></td></tr>";
     }
-    if(result.row_count === 0) {
+    if(result.row_count < 2) {
         $("#row_count").text(result.row_count + " record");
     }
     else {
-        if(result.row_count === 1) {
-            $("#row_count").text(result.row_count + " record");
-        }
-        else {
-            $("#row_count").text(result.row_count + " records");
-        }
+        $("#row_count").text(result.row_count + " records");
+    }
 
-        if(result.page_count === 1) {
-            $("#page_count").html("&nbsp;(Total Page: " + result.page_count + ")");
-        }
-        else {
-            $("#page_count").html("&nbsp;(Total Pages: " + result.page_count + ")");
-        }
+    if(result.page_count < 2) {
+        $("#page_count").html("&nbsp;(Total Page: " + result.page_count + ")");
+    }
+    else {
+        $("#page_count").html("&nbsp;(Total Pages: " + result.page_count + ")");
     }
 
     $("#url_tbody").html(tbody_html);
